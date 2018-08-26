@@ -20,15 +20,15 @@ String getMQTTTopic(String topic3)
 // Check for MQTT Disconnection
 void checkMQTTDisconnect(TcpClient& client, bool flag){
 
+	debugf("MQTT Broker connection failed");
 	// Called whenever MQTT connection is failed.
 	if (flag == true)
 	{
-		//Serial.println("MQTT Broker Disconnected!!");
+		debugf("MQTT Broker Disconnected!!");
 	}
-
 	// Restart connection attempt after few seconds
 	// changes procMQTTTimer callback function
-	procMQTTTimer.initializeMs(2 * 1000, startMqttClient).start(); // every 2 seconds
+	procMQTTTimer.initializeMs(5 * 1000, startMqttClient).start(); // every 5 seconds
 }
 
 void onMessageDelivered(uint16_t msgId, int type) {
@@ -54,10 +54,7 @@ void publishSmokeAlarm()
 // Publish our message
 void publishMessage()
 {
-	if (mqtt->getConnectionState() != eTCS_Connected)
-		startMqttClient(); // Auto reconnect
-
-	debugf("MQTT publishing message");
+	debugf("MQTT publish message");
 	publishSmokeAlarm();
 }
 
@@ -70,7 +67,28 @@ void onMessageReceived(String topic, String message)
 	//GRML BUG :-( It would be really nice to filter out retained messages,
 	//             to avoid the light powering up, going into defaultlight settings, then getting wifi and switching to a retained /light setting
 	//GRML :-( unfortunately we can't distinguish between retained and fresh messages here
+	debugf("MQTT msg recv: %s | %s", topic.c_str(), message.c_str());
 
+}
+
+void setLastWillOrAnnounceOnlineState(bool online)
+{
+	//prepare last will // online msg
+	debugf("MQTT prepare last will");
+	StaticJsonBuffer<256> jsonBuffer;
+	String message;
+	JsonObject& root = jsonBuffer.createObject();
+	root[JSONKEY_IP] = WifiStation.getIP().toString();
+	root[JSONKEY_ONLINE] = online;
+	root.printTo(message);
+	if (online)
+	{
+		debugf("MQTT publish online msg");
+		mqtt->publish(getMQTTTopic(MQTT_TOPIC3_DEVICEONLINE),message,true);
+	} else {
+		debugf("MQTT set last will");
+		mqtt->setWill(getMQTTTopic(MQTT_TOPIC3_DEVICEONLINE),message,0,true);
+	}
 }
 
 // Run MQTT client, connect to server, subscribe topics
@@ -99,30 +117,23 @@ void startMqttClient()
 							  default_certificate, default_certificate_len, NULL, true);
 #endif
 
-	//prepare last will
-	StaticJsonBuffer<256> jsonBuffer;
-	String message;
-	JsonObject& root = jsonBuffer.createObject();
-	root[JSONKEY_IP] = WifiStation.getIP().toString();
-	root[JSONKEY_ONLINE] = false;
-	root.printTo(message);
-	mqtt->setWill(getMQTTTopic(MQTT_TOPIC3_DEVICEONLINE),message,0,true);
+	//set last will, must be done before connecting
+	setLastWillOrAnnounceOnlineState(false);
+
+	debugf("MQTT connecting to broker");
+	mqtt->connect(NetConfig.mqtt_clientid, NetConfig.mqtt_user, NetConfig.mqtt_pass, true);
+	debugf("MQTT connected to broker");
 
 	// Assign a disconnect callback function
 	mqtt->setCompleteDelegate(checkMQTTDisconnect);
-	// debugf("connecting to to MQTT broker");
-	mqtt->connect(NetConfig.mqtt_clientid, NetConfig.mqtt_user, NetConfig.mqtt_pass, true);
-	// debugf("connected to MQTT broker");
 
-	//publish fact that we are online
-	root[JSONKEY_ONLINE] = true;
-	message="";
-	root.printTo(message);
-	mqtt->publish(getMQTTTopic(MQTT_TOPIC3_DEVICEONLINE),message,true);
+	// send online msg
+	setLastWillOrAnnounceOnlineState(true);
 
-	publishMessage();
 	//enable periodic status updates
 	procMQTTTimer.initializeMs(15 * 1000, publishMessage).start(); // every 15 seconds
+
+	publishMessage();
 }
 
 void stopMqttClient()
