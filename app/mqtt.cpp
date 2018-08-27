@@ -45,7 +45,7 @@ void publishSmokeAlarm()
 
 	JsonObject& root = jsonBuffer.createObject();
 	root[JSONKEY_ROOM] = NetConfig.location;
-	root[JSONKEY_BATTVOLTAGE] = 9*analogRead(BATTERY_ADC_PIN)/1024; //TODO: Spannungsteiler besser einrechnen, 0..9V auf 0..3.3V mappen
+	root[JSONKEY_BATTVOLTAGE] = 0.3+3.28*3.3*analogRead(BATTERY_ADC_PIN)/1024; //Spannungsteiler 180kOhm to 100kOhm maps 0..9V to 0..3.33V
 	root.printTo(message);
 	//publish to myself (where presumably everybody else also listens), the current settings
 	mqtt->publish(getMQTTTopic(MQTT_TOPIC3_ALARM), message, false);
