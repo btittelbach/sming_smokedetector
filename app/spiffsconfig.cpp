@@ -12,6 +12,7 @@ const String MQTTUSER_SETTINGS_FILE = "mqtt.user";
 const String MQTTPASS_SETTINGS_FILE = "mqtt.pass";
 const String MQTTBROKER_SETTINGS_FILE = "mqttbrkr.conf";
 const String AUTHTOKEN_SETTINGS_FILE = "authtoken";
+const String DOMAINNAME_SETTINGS_FILE = "domname.conf";
 const String USEDHCP_SETTINGS_FILE[MAX_WIFI_SETS] = {"dhcp0.flag","dhcp1.flag","dhcp2.flag"};
 const String DNS_SERVERS_FILE = "dns";
 const String LOCATION_SETTINGS_FILE = "loc.conf";
@@ -49,6 +50,7 @@ void SpiffsConfigStorage::load()
 		mqtt_user = fileGetContent(MQTTUSER_SETTINGS_FILE);
 		mqtt_pass = fileGetContent(MQTTPASS_SETTINGS_FILE);
 		authtoken = fileGetContent(AUTHTOKEN_SETTINGS_FILE);
+		domainname = fileGetContent(DOMAINNAME_SETTINGS_FILE);
 		mqtt_lvl1_topic = fileGetContent(MQTTLVL1TOPIC_SETTINGS_FILE);
 		
 		location = fileGetContent(LOCATION_SETTINGS_FILE);
@@ -85,6 +87,7 @@ void SpiffsConfigStorage::save()
 	fileSetContent(MQTTPASS_SETTINGS_FILE, mqtt_pass);
 	fileSetContent(AUTHTOKEN_SETTINGS_FILE, authtoken);
 	fileSetContent(MQTTLVL1TOPIC_SETTINGS_FILE, mqtt_lvl1_topic);
+	fileSetContent(DOMAINNAME_SETTINGS_FILE, domainname);
 
 	fileSetContent(LOCATION_SETTINGS_FILE, location);
 }

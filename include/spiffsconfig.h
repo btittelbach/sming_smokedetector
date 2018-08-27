@@ -10,11 +10,12 @@ public:
 	IPAddress netmask = IPAddress(255,255,255,0);
 	IPAddress gw = IPAddress(192, 168, 127, 254);
 	IPAddress dns[DNS_MAX_SERVERS] = {IPAddress(1,1,1,1),IPAddress(8,8,8,8)};
+	String domainname = "lan";
 	String wifi_ssid[MAX_WIFI_SETS]={"","",""};
 	String wifi_pass[MAX_WIFI_SETS]={"","",""};
-	String mqtt_broker="mqtt.tittelbach.at";
+	String mqtt_broker="mqtt.lan";
 	String mqtt_clientid="test";
-	String mqtt_lvl1_topic="pesta67";
+	String mqtt_lvl1_topic="sensors";
 	String mqtt_user;
 	String mqtt_pass;
 	bool enabledhcp[MAX_WIFI_SETS]={true,true,true};

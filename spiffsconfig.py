@@ -4,7 +4,7 @@ from ipaddress import ip_address
 import os
 import struct
 
-def writeConfig(ip,nm,gw,wifi0_ssid,wifi0_pass,mqtt_broker,mqtt_level1topic,mqtt_clientid,mqtt_user,mqtt_pass,authtoken,dhcp0=True,dhcp1=True,dhcp2=True,mqtt_port=1883,wifi1_ssid=b"",wifi1_pass=b"",wifi2_ssid=b"",wifi2_pass=b"",dns=[],location=""):
+def writeConfig(ip,nm,gw,wifi0_ssid,wifi0_pass,mqtt_broker,mqtt_level1topic,mqtt_clientid,mqtt_user,mqtt_pass,authtoken,dhcp0=True,dhcp1=True,dhcp2=True,domainname="lan",mqtt_port=1883,wifi1_ssid=b"",wifi1_pass=b"",wifi2_ssid=b"",wifi2_pass=b"",dns=[],location=""):
     NET_SETTINGS_FILE = "net.conf"
     WIFISSID0_SETTINGS_FILE = "wifi0.ssid"
     WIFIPASS0_SETTINGS_FILE = "wifi0.pass"
@@ -12,6 +12,7 @@ def writeConfig(ip,nm,gw,wifi0_ssid,wifi0_pass,mqtt_broker,mqtt_level1topic,mqtt
     WIFIPASS1_SETTINGS_FILE = "wifi1.pass"
     WIFISSID2_SETTINGS_FILE = "wifi2.ssid"
     WIFIPASS2_SETTINGS_FILE = "wifi2.pass"
+    DOMAINNAME_SETTINGS_FILE = "domname.conf"
     MQTTCLIENT_SETTINGS_FILE = "mqtt.client"
     MQTTUSER_SETTINGS_FILE = "mqtt.user"
     MQTTPASS_SETTINGS_FILE = "mqtt.pass"
@@ -54,6 +55,8 @@ def writeConfig(ip,nm,gw,wifi0_ssid,wifi0_pass,mqtt_broker,mqtt_level1topic,mqtt
         fh.write(wifi2_ssid)
     with open(os.path.join(DIR, WIFIPASS2_SETTINGS_FILE),"wb") as fh:
         fh.write(wifi2_pass)
+    with open(os.path.join(DIR, DOMAINNAME_SETTINGS_FILE),"wb") as fh:
+        fh.write(domainname)
     with open(os.path.join(DIR, MQTTBROKER_SETTINGS_FILE),"wb") as fh:
         fh.write(mqtt_broker)
     with open(os.path.join(DIR, MQTTCLIENT_SETTINGS_FILE),"wb") as fh:
@@ -96,17 +99,18 @@ def writeConfig(ip,nm,gw,wifi0_ssid,wifi0_pass,mqtt_broker,mqtt_level1topic,mqtt
 ## Example Use
 # from spiffsconfig import writeConfig
 # writeConfig(
-#     ip="",
-#     nm="",
-#     gw="",
-#     dns=[],
+#     ip="192.168.1.11",
+#     nm="255.255.255.0",
+#     gw="192.168.1.1",
+#     dns=["1.1.1.1","8.8.8.8"],
+#     domainname=b"localdomain",
 #     dhcp0=True,
-#     wifi0_ssid=b"",
-#     wifi0_pass=b"",
-#     location=b"",
+#     wifi0_ssid=b"MyWifi",
+#     wifi0_pass=b"MyWifiPassword",
+#     location=b"livingroom",
 #     mqtt_port=1883,
-#     mqtt_broker=b"",
-#     mqtt_clientid=b"",
+#     mqtt_broker=b"mqtt.localdomain",
+#     mqtt_clientid=b"smokedetector1",
 #     mqtt_user=b"",
 #     mqtt_pass=b"",
-#     authtoken=b"")
+#     authtoken=b"none")

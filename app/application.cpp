@@ -27,12 +27,6 @@ void configureDNSServer(uint8_t n, IPAddress a)
 
 void configureWifi()
 {
-	// ip_addr_t ipdnsr3_;
-	// ip_addr_t ipdnsffgraz_;
-	// ip4_addr_set_u32(&ipdnsr3_, 0x21D36A59); //89.106.211.33
-	// ip4_addr_set_u32(&ipdnsffgraz_,0x0A000B0A); //10.12.0.10
-	// dns_setserver(0,&ipdnsr3_);
-	// dns_setserver(1,&ipdnsffgraz_);
 	for (uint8_t d=0; d<DNS_MAX_SERVERS;d++)
 		configureDNSServer(d,NetConfig.dns[d]);
 	WifiAccessPoint.enable(false);
@@ -40,7 +34,7 @@ void configureWifi()
 	// Serial.println("clientid: "+NetConfig.mqtt_clientid);
 	// Serial.println("SSID: "+NetConfig.getWifiSSID());
 	// Serial.println("WifiPass: "+NetConfig.getWifiPASS());
-	WifiStation.setHostname(NetConfig.mqtt_clientid+".realraum.at");
+	WifiStation.setHostname(NetConfig.mqtt_clientid+"."+NetConfig.domainname);
 	WifiStation.config(NetConfig.getWifiSSID(), NetConfig.getWifiPASS()); // Put you SSID and Password here
 	WifiStation.enableDHCP(NetConfig.getEnableDHCP());
 	if (!NetConfig.getEnableDHCP())
