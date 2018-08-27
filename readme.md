@@ -5,6 +5,8 @@ It's firmware for an ESP8266 written in C++ using the Sming Framework. It is mea
 
 The battery voltage assumes a voltage divider of 180K Ohms to 100K Ohms supplied by the 9V battery and connected to Wemos A0.
 
+You can find the schematic in <tt>esp8266_smokedetector/esp8266_smokedetector.pdf</tt>
+
 Configuration
 -------------
 
