@@ -3,7 +3,5 @@
 
 void wifiConnectOk();
 void wifiConnectFail();
-void connectToWifi();
-void ready();
 void init();
 #endif

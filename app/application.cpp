@@ -70,7 +70,7 @@ void wifiConnectFail(String ssid, uint8_t ssidLength, uint8_t *bssid, uint8_t re
 //////////////////////////////////////
 
 void setupPINs() {
-	pinMode(BATTERY_ADC_PIN, INPUT); //GND for BM280
+	pinMode(BATTERY_ADC_PIN, INPUT);
 }
 
 void init()

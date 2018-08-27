@@ -48,7 +48,8 @@ void publishSmokeAlarm()
 	root[JSONKEY_BATTVOLTAGE] = 0.3+3.28*3.3*analogRead(BATTERY_ADC_PIN)/1024; //Spannungsteiler 180kOhm to 100kOhm maps 0..9V to 0..3.33V
 	root.printTo(message);
 	//publish to myself (where presumably everybody else also listens), the current settings
-	mqtt->publish(getMQTTTopic(MQTT_TOPIC3_ALARM), message, false);
+	if (!mqtt->publish(getMQTTTopic(MQTT_TOPIC3_ALARM), message, false))
+		debugf("MQTT unable to publish alarm msg.");
 }
 
 // Publish our message
@@ -62,12 +63,11 @@ void publishMessage()
 // Callback for messages, arrived from MQTT server
 void onMessageReceived(String topic, String message)
 {
-	// debugf("topic: %s",topic.c_str());
-	// debugf("msg: %s",message.c_str());
+	debugf("MQTT topic: %s",topic.c_str());
+	debugf("MQTT msg: %s",message.c_str());
 	//GRML BUG :-( It would be really nice to filter out retained messages,
 	//             to avoid the light powering up, going into defaultlight settings, then getting wifi and switching to a retained /light setting
 	//GRML :-( unfortunately we can't distinguish between retained and fresh messages here
-	debugf("MQTT msg recv: %s | %s", topic.c_str(), message.c_str());
 
 }
 
@@ -84,10 +84,12 @@ void setLastWillOrAnnounceOnlineState(bool online)
 	if (online)
 	{
 		debugf("MQTT publish online msg");
-		mqtt->publish(getMQTTTopic(MQTT_TOPIC3_DEVICEONLINE),message,true);
+		if (!mqtt->publish(getMQTTTopic(MQTT_TOPIC3_DEVICEONLINE),message,true))
+			debugf("MQTT unable to publish online msg.");
 	} else {
 		debugf("MQTT set last will");
-		mqtt->setWill(getMQTTTopic(MQTT_TOPIC3_DEVICEONLINE),message,0,true);
+		if (!mqtt->setWill(getMQTTTopic(MQTT_TOPIC3_DEVICEONLINE),message,0,true))
+			debugf("MQTT unable to set the last will and testament.");
 	}
 }
 
@@ -102,10 +104,6 @@ void startMqttClient()
 		mqtt = new MqttClient(NetConfig.mqtt_broker, NetConfig.mqtt_port, onMessageReceived);
 	}
 
-/*	if(!mqtt->setWill("last/will","The connection from this device is lost:(", 1, true)) {
-		debugf("Unable to set the last will and testament. Most probably there is not enough memory on the device.");
-	}
-*/
 	mqtt->setKeepAlive(42);
 	mqtt->setPingRepeatTime(21);
 	bool usessl=false;
@@ -141,5 +139,6 @@ void stopMqttClient()
 	mqtt->setKeepAlive(0);
 	mqtt->setPingRepeatTime(0);
 	procMQTTTimer.stop();
+	//unsubscribe any topics here ...
 }
 
