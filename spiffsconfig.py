@@ -96,7 +96,12 @@ def writeConfig(ip,nm,gw,wifi0_ssid,wifi0_pass,mqtt_broker,mqtt_level1topic,mqtt
     with open(os.path.join(DIR, LOCATION_SETTINGS_FILE),"wb") as fh:
         fh.write(location)
 
-## Example Use
+
+### Usage ###
+##
+## Create a .py File with content below and run
+##
+## Example:
 # from spiffsconfig import writeConfig
 # writeConfig(
 #     ip="192.168.1.11",
@@ -111,6 +116,7 @@ def writeConfig(ip,nm,gw,wifi0_ssid,wifi0_pass,mqtt_broker,mqtt_level1topic,mqtt
 #     mqtt_port=1883,
 #     mqtt_broker=b"mqtt.localdomain",
 #     mqtt_clientid=b"smokedetector1",
+#     mqtt_level1topic=b"sensors",
 #     mqtt_user=b"",
 #     mqtt_pass=b"",
 #     authtoken=b"none")
